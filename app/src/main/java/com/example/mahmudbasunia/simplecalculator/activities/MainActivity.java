@@ -1,5 +1,6 @@
-package com.example.mahmudbasunia.simplecalculator;
+package com.example.mahmudbasunia.simplecalculator.activities;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,7 +9,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.mahmudbasunia.simplecalculator.CalcApplication;
+import com.example.mahmudbasunia.simplecalculator.R;
 import com.example.mahmudbasunia.simplecalculator.data.CalculatorDao;
 import com.example.mahmudbasunia.simplecalculator.data.CalculatorDatabase;
 import com.example.mahmudbasunia.simplecalculator.data.model.CalculationModel;
@@ -134,9 +138,12 @@ public class MainActivity extends AppCompatActivity {
                 .subscribeWith(new DisposableSingleObserver<List<CalculationModel>>() {
                     @Override
                     public void onSuccess(List<CalculationModel> calculationModels) {
-                        for (CalculationModel model : calculationModels) {
+                        if (calculationModels.size() > 0)
+                            startActivity(new Intent(MainActivity.this, RecordsActivity.class));
+                        else Toast.makeText(MainActivity.this, "No records saved yet!", Toast.LENGTH_SHORT).show();
+                        /*for (CalculationModel model : calculationModels) {
                             Log.d("mahmud", "records: " + model.result);
-                        }
+                        }*/
 
                     }
 

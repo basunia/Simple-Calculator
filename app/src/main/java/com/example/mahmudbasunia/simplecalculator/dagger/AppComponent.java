@@ -1,6 +1,7 @@
 package com.example.mahmudbasunia.simplecalculator.dagger;
 
-import com.example.mahmudbasunia.simplecalculator.MainActivity;
+import com.example.mahmudbasunia.simplecalculator.activities.MainActivity;
+import com.example.mahmudbasunia.simplecalculator.activities.RecordsActivity;
 
 import javax.inject.Singleton;
 
@@ -15,5 +16,6 @@ import dagger.Component;
 public interface AppComponent {
 
     void inject(MainActivity mainActivity);
+    void inject(RecordsActivity recordsActivity);
 
 }
