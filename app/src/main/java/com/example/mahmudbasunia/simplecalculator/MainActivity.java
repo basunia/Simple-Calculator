@@ -16,6 +16,8 @@ import com.example.mahmudbasunia.simplecalculator.data.model.CalculationModel;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import javax.inject.Inject;
+
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -41,6 +43,25 @@ public class MainActivity extends AppCompatActivity {
         DIVIDE,
         STARTOVER,
         NONE
+    }
+
+    CalculatorDao calculatorDao;
+    @Inject
+    CalculatorDatabase calculatorDatabase;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // This is to tell the Activity what layout to use
+        setContentView(R.layout.activity_main);
+        //initializing dagger
+        CalcApplication.component().inject(this);
+
+        calculatorDao = calculatorDatabase.calculatorDao();
+
+        display = (TextView) findViewById(R.id.display);
+        operation = Operation.STARTOVER;
+        decimal = (Button) findViewById(R.id.decimal);
     }
 
     public void operationButtonClick(View view) {
@@ -110,20 +131,20 @@ public class MainActivity extends AppCompatActivity {
         compositeDisposable.add(calculatorDao.getAllResults()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-        .subscribeWith(new DisposableSingleObserver<List<CalculationModel>>() {
-            @Override
-            public void onSuccess(List<CalculationModel> calculationModels) {
-                for (CalculationModel model : calculationModels) {
-                    Log.d("mahmud", "records: " + model.result);
-                }
+                .subscribeWith(new DisposableSingleObserver<List<CalculationModel>>() {
+                    @Override
+                    public void onSuccess(List<CalculationModel> calculationModels) {
+                        for (CalculationModel model : calculationModels) {
+                            Log.d("mahmud", "records: " + model.result);
+                        }
 
-            }
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-
-            }
-        }));
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("mahmud", e.getMessage());
+                    }
+                }));
     }
 
     private void insrtIntoDatabase() {
@@ -135,40 +156,25 @@ public class MainActivity extends AppCompatActivity {
                     return calculatorDao.insert(model);
                 }
             }).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeWith(new SingleObserver<Long>() {
-                @Override
-                public void onSubscribe(Disposable d) {
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new SingleObserver<Long>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
 
-                }
+                        }
 
-                @Override
-                public void onSuccess(Long aLong) {
-                    Log.d("mahmud", "Successful");
-                }
+                        @Override
+                        public void onSuccess(Long aLong) {
+                            Log.d("mahmud", "Successful");
+                        }
 
-                @Override
-                public void onError(Throwable e) {
+                        @Override
+                        public void onError(Throwable e) {
 
-                }
-            });
+                        }
+                    });
 
         }
-    }
-
-    CalculatorDao calculatorDao;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // This is to tell the Activity what layout to use
-        setContentView(R.layout.activity_main);
-
-        calculatorDao = CalculatorDatabase.getInstance(this).calculatorDao();
-
-        display = (TextView) findViewById(R.id.display);
-        operation = Operation.STARTOVER;
-        decimal = (Button) findViewById(R.id.decimal);
     }
 
     public void numberButtonClick(View view) {
