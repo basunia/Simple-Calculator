@@ -24,6 +24,8 @@
         android:id="@+id/vertical"
         android:layout_below="@+id/display">
 
+
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"

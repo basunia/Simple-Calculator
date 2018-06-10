@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.mahmudbasunia.simplecalculator.data.CalculatorDatabase;
+import com.example.mahmudbasunia.simplecalculator.data.model.CalculationModel;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView display;
@@ -28,21 +31,27 @@ public class MainActivity extends AppCompatActivity {
     public void operationButtonClick(View view) {
         firstNumber = Double.parseDouble(display.getText().toString());
         decimal.setEnabled(true);
-        display.setText("");
+        //display.setText("");
+        String operator = null;
         switch (view.getId()) {
             case R.id.add:
+                operator = " + ";
                 operation = Operation.ADD;
                 break;
             case R.id.multiply:
+                operator = " * ";
                 operation = Operation.MULTIPLY;
                 break;
             case R.id.subtract:
+                operator = " - ";
                 operation = Operation.SUBTRACT;
                 break;
             case R.id.divide:
+                operator = " / ";
                 operation = Operation.DIVIDE;
                 break;
         }
+        //display.append(operator);
     }
 
     public void equalButtonClick(View view) {
@@ -67,6 +76,13 @@ public class MainActivity extends AppCompatActivity {
         }
         display.setText(firstNumber + "");
         operation = Operation.STARTOVER;
+
+        insrtIntoDatabase(firstNumber);
+    }
+
+    private void insrtIntoDatabase(Double fName) {
+        CalculationModel model = new CalculationModel(null, null, null, String.valueOf(fName));
+        CalculatorDatabase.getInstance(this).calculatorDao().insert(model);
     }
 
     @Override
