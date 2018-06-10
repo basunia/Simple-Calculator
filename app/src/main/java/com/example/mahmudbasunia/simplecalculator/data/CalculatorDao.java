@@ -19,7 +19,7 @@ import io.reactivex.Single;
 public interface CalculatorDao {
 
     @Insert
-    Completable insert(CalculationModel calculationModel);
+    Long insert(CalculationModel calculationModel);
 
     @Query("SELECT * FROM " + CalculationModel.TABLE_NAME)
     Single<List<CalculationModel>> getAllResults();

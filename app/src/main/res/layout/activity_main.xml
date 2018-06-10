@@ -24,7 +24,41 @@
         android:id="@+id/vertical"
         android:layout_below="@+id/display">
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:id="@+id/row">
 
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Records"
+                android:onClick="showRecords"
+                android:textSize="@dimen/text_size"
+                android:id="@+id/bRecords" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Save"
+                android:onClick="saveRecords"
+                android:textSize="@dimen/text_size"
+                android:id="@+id/bSaveRecords" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="CL"
+                android:onClick="clearData"
+                android:textSize="@dimen/text_size"
+                android:id="@+id/bClear" />
+        </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"

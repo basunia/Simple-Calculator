@@ -2,16 +2,31 @@ package com.example.mahmudbasunia.simplecalculator;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.mahmudbasunia.simplecalculator.data.CalculatorDao;
 import com.example.mahmudbasunia.simplecalculator.data.CalculatorDatabase;
 import com.example.mahmudbasunia.simplecalculator.data.model.CalculationModel;
 
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
+
 public class MainActivity extends AppCompatActivity {
+
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private TextView display;
     private Operation operation;
@@ -31,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     public void operationButtonClick(View view) {
         firstNumber = Double.parseDouble(display.getText().toString());
         decimal.setEnabled(true);
-        //display.setText("");
+        display.setText("");
         String operator = null;
         switch (view.getId()) {
             case R.id.add:
@@ -77,19 +92,80 @@ public class MainActivity extends AppCompatActivity {
         display.setText(firstNumber + "");
         operation = Operation.STARTOVER;
 
-        insrtIntoDatabase(firstNumber);
+        //insrtIntoDatabase(firstNumber);
     }
 
-    private void insrtIntoDatabase(Double fName) {
-        CalculationModel model = new CalculationModel(null, null, null, String.valueOf(fName));
-        CalculatorDatabase.getInstance(this).calculatorDao().insert(model);
+    public void clearData(View view) {
+        //Clear the display
+        display.setText("0");
+        operation = Operation.STARTOVER;
+        decimal.setEnabled(true);
     }
+
+    public void saveRecords(View view) {
+        insrtIntoDatabase();
+    }
+
+    public void showRecords(View view) {
+        compositeDisposable.add(calculatorDao.getAllResults()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+        .subscribeWith(new DisposableSingleObserver<List<CalculationModel>>() {
+            @Override
+            public void onSuccess(List<CalculationModel> calculationModels) {
+                for (CalculationModel model : calculationModels) {
+                    Log.d("mahmud", "records: " + model.result);
+                }
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+        }));
+    }
+
+    private void insrtIntoDatabase() {
+        if (firstNumber != 0) {
+            final CalculationModel model = new CalculationModel(null, null, null, String.valueOf(firstNumber));
+            Single.fromCallable(new Callable<Long>() {
+                @Override
+                public Long call() throws Exception {
+                    return calculatorDao.insert(model);
+                }
+            }).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeWith(new SingleObserver<Long>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onSuccess(Long aLong) {
+                    Log.d("mahmud", "Successful");
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+            });
+
+        }
+    }
+
+    CalculatorDao calculatorDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // This is to tell the Activity what layout to use
         setContentView(R.layout.activity_main);
+
+        calculatorDao = CalculatorDatabase.getInstance(this).calculatorDao();
+
         display = (TextView) findViewById(R.id.display);
         operation = Operation.STARTOVER;
         decimal = (Button) findViewById(R.id.decimal);
@@ -124,5 +200,11 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }*/
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        compositeDisposable.dispose();
     }
 }
