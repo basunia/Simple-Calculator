@@ -15,7 +15,6 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.example.mahmudbasunia.simplecalculator.CalcApplication
 import com.example.mahmudbasunia.simplecalculator.R
-import com.example.mahmudbasunia.simplecalculator.activities.RecordsActivity.CalculatorAdapter.RecordHolder
 import com.example.mahmudbasunia.simplecalculator.data.CalculatorDao
 import com.example.mahmudbasunia.simplecalculator.data.CalculatorDatabase
 import com.example.mahmudbasunia.simplecalculator.data.model.CalculationModel
@@ -30,12 +29,8 @@ import javax.inject.Inject
  * Created by Mahmud Basunia on 6/11/2018.
  */
 class RecordsActivity : AppCompatActivity() {
-    private var calculationList: MutableList<CalculationModel>? = null
+    private var calculationList: MutableList<CalculationModel?>? = null
     private var calculatorAdapter: CalculatorAdapter? = null
-
-    @kotlin.jvm.JvmField
-    @BindView(R.id.recyclerView)
-    var recyclerView: RecyclerView? = null
 
     @kotlin.jvm.JvmField
     @Inject
@@ -47,22 +42,23 @@ class RecordsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_records)
         ButterKnife.bind(this)
         calculationList = ArrayList()
-        recyclerView!!.layoutManager = LinearLayoutManager(this)
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView?.layoutManager = LinearLayoutManager(this)
         calculatorAdapter = CalculatorAdapter(this)
         recyclerView!!.adapter = calculatorAdapter
 
         /*Injecting Dagger*/CalcApplication.component().inject(this)
         calculatorDao = calculatorDatabase!!.calculatorDao()
-        compositeDisposable.add(calculatorDao.getAllResults()
+        compositeDisposable.add(calculatorDao!!.allResults
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object : DisposableSingleObserver<List<CalculationModel?>?>() {
-                    override fun onSuccess(calculationModels: List<CalculationModel>) {
-                        calculationList.clear()
-                        calculationList.addAll(calculationModels)
+                    override fun onSuccess(calculationModels: List<CalculationModel?>) {
+                        calculationList?.clear()
+                        calculationList?.addAll(calculationModels)
                         calculatorAdapter!!.notifyDataSetChanged()
                         for (model in calculationModels) {
-                            Log.d("mahmud", "records: " + model.result)
+                            Log.d("mahmud", "records: " + model?.result)
                         }
                     }
 
@@ -72,7 +68,7 @@ class RecordsActivity : AppCompatActivity() {
                 }))
     }
 
-    private inner class CalculatorAdapter(var context: Context) : RecyclerView.Adapter<RecordHolder>() {
+    private inner class CalculatorAdapter(var context: Context) : RecyclerView.Adapter<CalculatorAdapter.RecordHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordHolder {
             val view = LayoutInflater.from(context).inflate(R.layout.records_item, parent, false)
             return RecordHolder(view)
@@ -80,8 +76,8 @@ class RecordsActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: RecordHolder, position: Int) {
             val model = calculationList!![position]
-            holder.id.text = "" + model.id
-            holder.result.text = "" + model.result
+            holder.id.text = "" + model?.id
+            holder.result.text = "" + model?.result
         }
 
         override fun getItemCount(): Int {

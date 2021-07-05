@@ -20,3 +20,7 @@ X
 app/build.gradle,f/4/f4a01d6a4fcb971362ec00a83903fd3902f52164
 ‡
 Wapp/src/main/java/com/example/mahmudbasunia/simplecalculator/activities/MainActivity.kt,8/5/85890990472e6a3f413c8780062f0706ce4072ff
+Š
+Zapp/src/main/java/com/example/mahmudbasunia/simplecalculator/activities/RecordsActivity.kt,1/6/167dbf40ac81efb2220e68665a53a808b910ba7a
+‰
+Yapp/src/main/java/com/example/mahmudbasunia/simplecalculator/data/CalculatorDatabase.java,e/6/e615b1e556558afc8904ed741c55ea70f8528c80

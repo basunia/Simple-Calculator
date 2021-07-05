@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object : DisposableSingleObserver<List<CalculationModel?>?>() {
                     override fun onSuccess(calculationModels: List<CalculationModel?>) {
-                        if (calculationModels.size > 0) startActivity(Intent(this@MainActivity, RecordsActivity::class.java)) else Toast.makeText(this@MainActivity, "No records saved yet!", Toast.LENGTH_SHORT).show()
+                        if (calculationModels.isNotEmpty()) startActivity(Intent(this@MainActivity, RecordsActivity::class.java)) else Toast.makeText(this@MainActivity, "No records saved yet!", Toast.LENGTH_SHORT).show()
                         /*for (CalculationModel model : calculationModels) {
                             Log.d("mahmud", "records: " + model.result);
                         }*/
@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : SingleObserver<Long?> {
                         override fun onSubscribe(d: Disposable) {}
-                        override fun onSuccess(aLong: Long?) {
+                        override fun onSuccess(t: Long) {
                             Log.d("mahmud", "Successful")
                         }
 
